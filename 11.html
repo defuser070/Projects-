@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Credit Card Fraud Detection</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      color: #222;
+      margin: 0;
+      padding: 40px;
+      text-align: center;
+    }
+    h1 {
+      color: #007acc;
+      margin-bottom: 10px;
+    }
+    .info {
+      margin-top: 20px;
+      font-size: 1.2em;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .footer {
+      margin-top: 50px;
+      font-size: 0.9em;
+      color: #666;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 1em;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background-color: #007acc;
+      color: #fff;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 1.2em;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .form-group {
+      margin-bottom: 15px;
+      width: 100%;
+      max-width: 400px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      text-align: left;
+    }
+    input[type="number"],
+    input[type="text"],
+    input[type="time"] {
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .error-message {
+      color: red;
+      font-size: 0.9em;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Credit Card Fraud Detection</h1>
+    <div class="info">
+      <p>This tool simulates a basic fraud check using mock logic.</p>
+      <p>Enter transaction details to check if it's suspicious.</p>
+      <div id="formContainer"></div>
+      <div class="result" id="result"></div>
+    </div>
+    <div class="footer">
+      Created by Anurag Sharma | Aman Verma | B.Tech CSE | 4th Semester | Project-Based Learning
+    </div>
+  </div>
+  <script>
+    // Function to create form elements dynamically
+    function createForm() {
+      const formContainer = document.getElementById('formContainer');
+      const form = document.createElement('form');
+      form.id = 'fraudForm';
+
+      const fields = [
+        { label: 'Card Number:', type: 'text', id: 'cardNumber', placeholder: 'Enter card number' },
+        { label: 'Transaction Amount (₹):', type: 'number', id: 'amount', placeholder: 'Enter amount in ₹' },
+        { label: 'Transaction Location:', type: 'text', id: 'location', placeholder: 'Enter location' },
+        { label: 'Transaction Time:', type: 'time', id: 'time', placeholder: '' }
+      ];
+
+      fields.forEach(field => {
+        const formGroup = document.createElement('div');
+        formGroup.className = 'form-group';
+
+        const label = document.createElement('label');
+        label.htmlFor = field.id;
+        label.textContent = field.label;
+
+        const input = document.createElement('input');
+        input.type = field.type;
+        input.id = field.id;
+        input.name = field.id;
+        input.placeholder = field.placeholder;
+        input.required = true;
+
+        const errorSpan = document.createElement('span');
+        errorSpan.className = 'error-message';
+        errorSpan.id = field.id + 'Error';
+
+        formGroup.appendChild(label);
+        formGroup.appendChild(input);
+        formGroup.appendChild(errorSpan);
+        form.appendChild(formGroup);
+      });
+
+      const submitButton = document.createElement('button');
+      submitButton.type = 'submit';
+      submitButton.textContent = 'Check for Fraud';
+
+      form.appendChild(submitButton);
+      formContainer.appendChild(form);
+
+      // Add event listeners for real-time validation
+      fields.forEach(field => {
+        const inputElement = document.getElementById(field.id);
+        inputElement.addEventListener('input', () => {
+          validateField(field.id);
+        });
+      });
+
+      form.addEventListener('submit', handleFormSubmit);
+    }
+
+    // Function to validate individual fields
+    function validateField(fieldId) {
+      const input = document.getElementById(fieldId);
+      const errorSpan = document.getElementById(fieldId + 'Error');
+      if (!input.value.trim()) {
+        errorSpan.textContent = 'This field is required.';
+        return false;
+      } else {
+        errorSpan.textContent = '';
+        return true;
+      }
+    }
+
+    // Function to handle form submission
+    function handleFormSubmit(event) {
+      event.preventDefault();
+
+      const fieldIds = ['cardNumber', 'amount', 'location', 'time'];
+      let isValid = true;
+
+      fieldIds.forEach(id => {
+        if (!validateField(id)) {
+          isValid = false;
+        }
+      });
+
+      if (!isValid) {
+        document.getElementById('result').textContent = '';
+        return;
+      }
+
+      const cardNumber = document.getElementById('cardNumber').value.trim();
+      const amount = parseFloat(document.getElementById('amount').value.trim());
+      const location = document.getElementById('location').value.trim().toLowerCase();
+      const time = document.getElementById('time').value.trim();
+      const result = document.getElementById('result');
+
+      let isFraud = false;
+
+      if (amount > 5000) {
+        isFraud = true;
+      }
+
+      const suspiciousLocations = ["russia", "north korea", "dark web"];
+      if (suspiciousLocations.includes(location)) {
+        isFraud = true;
+      }
+
+      const hours = parseInt(time.split(":")[0]);
+      if (hours >= 0 && hours < 5) {
+        isFraud = true;
+      }
+
+      if (isFraud) {
+        result.innerHTML = "🚨 Potential Fraud Detected! 🚨";
+        result.style.color = "red";
+      } else {
+        result.innerHTML = "✅ Transaction Looks Safe!";
+        result.style.color = "green";
+      }
+    }
+
+    // Initialize form on page load
+    document.addEventListener('DOMContentLoaded', createForm);
+  </script>
+</body>
+</html>
